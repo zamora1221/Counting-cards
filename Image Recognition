@@ -1,0 +1,8 @@
+from __future__ import division
+import numpy as np
+import cv2
+import __future__
+from matplotlib import pyplot as plt
+from math import cos, sin
+
+def find_ACE(image):
