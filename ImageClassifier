@@ -22,22 +22,34 @@ def findDes(images):
         desList.append(des)
     return desList
 
-def FindID(img, desList):
+def FindID(img, desList,thres=36):
     kp2,des1 = orb.detectAndCompute(img,None)
     bf = cv2.BFMatcher()
-    for des in desList:
-        matches = bf.knnMatch(des, desT1, k=2)
-        good = []
-        for m,n in matches:
-            if m.distance < 0.75 * n.distance:
-                good.append([m])
-        matchList.append(len(good))
-    print(matchList)
+    matchList=[]
+    finalVal = -1
+    try:
+        for des in desList:
+            matches = bf.knnMatch(des, des1, k=2)
+            good = []
+            for m,n in matches:
+                if m.distance < 0.80 * n.distance:
+                    good.append([m])
+            matchList.append(len(good))
+        print(matchList)
+    except:
+        pass
+    if len(matchList)!=0:
+        if max(matchList) > thres:
+            finalVal = matchList.index(max(matchList))
+    return finalVal
+
+
+
+
 
 
 desList = findDes(images)
 print(len(desList))
-
 
 cap = cv2.VideoCapture(0)
 
@@ -45,7 +57,12 @@ while True:
 
     success, img_Black_Two = cap.read()
     imgOriginal = img_Black_Two.copy
-    findID(img2, desList)
+    id = FindID(img_Black_Two,desList)
+    if id != -1:
+        cv2.putText(img_Black_Two, classNames[id], (50, 50), cv2.FONT_ITALIC,1,(0,0,255,1))
+
+
 
     cv2.imshow('img_Black_Two', img_Black_Two)
     cv2.waitKey(1)
+
