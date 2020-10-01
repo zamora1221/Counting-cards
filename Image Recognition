@@ -1,8 +1,146 @@
-from __future__ import division
-import numpy as np
 import cv2
-import __future__
-from matplotlib import pyplot as plt
-from math import cos, sin
+import numpy as np
 
-def find_ACE(image):
+#load in all pictures all all the cards
+#ALL BLACK CARDS
+img_Black_Two = cv2.imread('cards/Black Two.png')
+img_Black_Three = cv2.imread('cards/Black Three.png')
+# img_Black_Ten = cv2.imread('cards/Black Ten.PNG')
+# img_Black_Jack = cv2.imread('cards/Black Jack.PNG')
+# img_Black_Queen = cv2.imread('cards/Black Queen.PNG')
+# img_Black_Four = cv2.imread('cards/Black Four.PNG')
+# img_Black_Five = cv2.imread('cards/Black Five.PNG')
+# img_Black_Six= cv2.imread('cards/Black Six.PNG')
+# img_Black_Seven = cv2.imread('cards/Black Seven.PNG')
+# img_Black_Eight = cv2.imread('cards/Black Eight.PNG')
+# img_Black_Nine = cv2.imread('cards/Black Nine.PNG')
+# img_Black_King = cv2.imread('cards/Black King.PNG')
+# img_Black_Ace = cv2.imread('cards/Black Ace.PNG')
+
+img_Train_Black_Two = cv2.imread('train/Szwie.png')
+img_Train_Black_Three = cv2.imread('train/Sdrie.png')
+# img_Train_Black_Four = cv2.imread('train/Svier.PNG')
+# img_Train_Black_Five = cv2.imread('train/Sfunf.PNG')
+# img_Train_Black_Six= cv2.imread('train/Ssechs.PNG')
+# img_Train_Black_Seven = cv2.imread('train/Ssieben.PNG')
+# img_Train_Black_Eight = cv2.imread('train/Sacht.PNG')
+# img_Train_Black_Nine = cv2.imread('train/Sneun.PNG')
+# img_Train_Black_Ten = cv2.imread('train/Szehn.PNG')
+# img_Train_Black_Jack = cv2.imread('train/Sbube.PNG')
+# img_Train_Black_Queen = cv2.imread('train/Sdame.PNG')
+# img_Train_Black_King = cv2.imread('train/Skonig.PNG')
+# img_Train_Black_Ace = cv2.imread('train/Sass.PNG')
+
+#ALL RED CARDS
+# img_Red_Two = cv2.imread('cards/Red Two.PNG')
+# img_Red_Three = cv2.imread('cards/Red Three.PNG')
+# img_Red_Four = cv2.imread('cards/Red Four.PNG')
+# img_Red_Five = cv2.imread('cards/Red Five.PNG')
+# img_Red_Six= cv2.imread('cards/Red Six.PNG')
+# img_Red_Seven = cv2.imread('cards/Red Seven.PNG')
+# img_Red_Eight = cv2.imread('cards/Red Eight.PNG')
+# img_Red_Nine = cv2.imread('cards/Red Nine.PNG')
+# img_Red_Ten = cv2.imread('cards/Red Ten.PNG')
+# img_Red_Jack = cv2.imread('cards/Red Jack.PNG')
+# img_Red_Queen = cv2.imread('cards/Red Queen.PNG')
+# img_Red_King = cv2.imread('cards/Red King.PNG')
+# img_Red_Ace = cv2.imread('cards/Red Ace.PNG')
+#
+# img_Train_Red_Two = cv2.imread('train/Rzwie.png')
+# img__Train_Red_Three = cv2.imread('train/Rdrie.png')
+# img_Train_Red_Four = cv2.imread('train/Rvier.PNG')
+# img_Train_Red_Five = cv2.imread('train/Rfunf.PNG')
+# img_Train_Red_Six= cv2.imread('train/Rsechs.PNG')
+# img_Train_Red_Seven = cv2.imread('train/Rsieben.PNG')
+# img_Train_Red_Eight = cv2.imread('train/Racht.PNG')
+# img_Train_Red_Nine = cv2.imread('train/Rneun.PNG')
+# img_Train_Red_Ten = cv2.imread('train/Rzehn.PNG')
+# img_Train_Red_Jack = cv2.imread('train/Rbube.PNG')
+# img_Train_Red_Queen = cv2.imread('train/Rdame.PNG')
+# img_Train_Red_King = cv2.imread('train/Rkonig.PNG')
+# img_Train_Red_Ace = cv2.imread('train/Rass.PNG')
+#Shows a image that you are wanting to see
+#cv2.imshow('img_BlackTwo', img_BlackTwo)
+#cv2.waitKey(0)
+
+
+orb = cv2.ORB_create(nfeatures=500)
+
+kp_Black_2, des1 = orb.detectAndCompute(img_Black_Two, None)
+# kp_Black_3, des2 = orb.detectAndCompute(img_Black_Three, None)
+# kp_Black_4, des3 = orb.detectAndCompute(img_Black_Four, None)
+# kp_Black_5, des4 = orb.detectAndCompute(img_Black_Five, None)
+# kp_Black_6, des5 = orb.detectAndCompute(img_Black_Six, None)
+# kp_Black_7, des6 = orb.detectAndCompute(img_Black_Seven, None)
+# kp_Black_8, des7 = orb.detectAndCompute(img_Black_Eight, None)
+# kp_Black_9, des8 = orb.detectAndCompute(img_Black_Nine, None)
+# kp_Black_10, des9 = orb.detectAndCompute(img_Black_Ten, None)
+# kp_Black_J, des10 = orb.detectAndCompute(img_Black_Jack, None)
+# kp_Black_Q, desj = orb.detectAndCompute(img_Black_Queen, None)
+# kp_Black_K, desq = orb.detectAndCompute(img_Black_King, None)
+# kp_Black_A, desk = orb.detectAndCompute(img_Black_Ace, None)
+
+kp_Train_Black_2, desT1 = orb.detectAndCompute(img_Train_Black_Two, None)
+# kp_Train_Black_3, desT2 = orb.detectAndCompute(img_Train_Black_Three, None)
+# kp_Train_Black_4, desT3 = orb.detectAndCompute(img_Black_Four, None)
+# kp_Train_Black_5, desT4 = orb.detectAndCompute(img_Black_Five, None)
+# kp_Train_Black_6, desT5 = orb.detectAndCompute(img_Black_Six, None)
+# kp_Train_Black_7, desT6 = orb.detectAndCompute(img_Black_Seven, None)
+# kp_Train_Black_8, desT7 = orb.detectAndCompute(img_Black_Eight, None)
+# kp_Train_Black_9, desT8 = orb.detectAndCompute(img_Black_Nine, None)
+# kp_Train_Black_10, desT9 = orb.detectAndCompute(img_Black_Ten, None)
+# kp_Train_Black_J, desT10 = orb.detectAndCompute(img_Black_Jack, None)
+# kp_Train_Black_Q, desTJ = orb.detectAndCompute(img_Black_Queen, None)
+# kp_Train_Black_K, desTQ = orb.detectAndCompute(img_Black_King, None)
+# kp_Train_Black_A, desTK = orb.detectAndCompute(img_Black_Ace, None)
+
+imgKpB2 = cv2.drawKeypoints(img_Black_Two, kp_Black_2, None)
+# imgKpB3 = cv2.drawKeypoints(img_Black_Three, kp_Black_3, None)
+# imgKpB4 = cv2.drawKeypoints(img_Black_Four, kp_Black_4, None)
+# imgKpB5 = cv2.drawKeypoints(img_Black_Five, kp_Black_5, None)
+# imgKpB6 = cv2.drawKeypoints(img_Black_Six, kp_Black_6, None)
+# imgKpB7 = cv2.drawKeypoints(img_Black_Seven, kp_Black_7, None)
+# imgKpB8 = cv2.drawKeypoints(img_Black_Eight, kp_Black_8, None)
+# imgKpB9 = cv2.drawKeypoints(img_Black_Nine, kp_Black_9, None)
+# imgKpB10 = cv2.drawKeypoints(img_Black_Ten, kp_Black_10, None)
+# imgKpBJ = cv2.drawKeypoints(img_Black_Jack, kp_Black_J, None)
+# imgKpBQ = cv2.drawKeypoints(img_Black_Queen, kp_Black_Q, None)
+# imgKpBK = cv2.drawKeypoints(img_Black_King, kp_Black_K, None)
+# imgKpBA = cv2.drawKeypoints(img_Black_Ace, kp_Black_A, None)
+
+imgKpT2 = cv2.drawKeypoints(img_Train_Black_Two, kp_Train_Black_2, None)
+# imgKpTB3 = cv2.drawKeypoints(img_Train_Black_Three, kp_Train_Black_3, None)
+# imgKpTB4 = cv2.drawKeypoints(img_Black_Four, kp_Black_4, None)
+# imgKpTB5 = cv2.drawKeypoints(img_Black_Five, kp_Black_5, None)
+# imgKpTB6 = cv2.drawKeypoints(img_Black_Six, kp_Black_6, None)
+# imgKpTB7 = cv2.drawKeypoints(img_Black_Seven, kp_Black_7, None)
+# imgKpTB8 = cv2.drawKeypoints(img_Black_Eight, kp_Black_8, None)
+# imgKpTB9 = cv2.drawKeypoints(img_Black_Nine, kp_Black_9, None)
+# imgKpTB10 = cv2.drawKeypoints(img_Black_Ten, kp_Black_10, None)
+# imgKpTBJ = cv2.drawKeypoints(img_Black_Jack, kp_Black_J, None)
+# imgKpTBQ = cv2.drawKeypoints(img_Black_Queen, kp_Black_Q, None)
+# imgKpTBK = cv2.drawKeypoints(img_Black_King, kp_Black_K, None)
+# imgKpTBA = cv2.drawKeypoints(img_Black_Ace, kp_Black_A, None)
+# print(des2.shape)
+
+bf = cv2.BFMatcher()
+matches = bf.knnMatch(des1, desT1, k=2)
+
+good = []
+for m,n in matches:
+    if m.distance < 0.75 * n.distance:
+        good.append([m])
+
+img3 =cv2.drawMatchesKnn(img_Black_Two,kp_Black_2, img_Train_Black_Two, kp_Train_Black_2, good, None, flags=2)
+
+cv2.imshow('img3', img3)
+cv2.waitKey(0)
+
+
+
+
+
+
+#Shows a image that you are wanting to see
+#cv2.imshow('img_BlackTwo', img_BlackTwo)
+#cv2.waitKey(0)
