@@ -1,128 +1,449 @@
-from tkinter import *
 import tkinter as tk
-decks = input("how many decks are being played: ")
+from tkinter import messagebox
+from PIL import ImageTk, Image
+import os
 
+class CardCounter:
+    """
+    A Tkinter-based application for counting cards in games like Blackjack.
+    It tracks the running count, true count, and the probability of drawing a face card.
+    """
 
+    def __init__(self, root):
+        """
+        Initialize the CardCounter application.
+        """
+        self.root = root
+        self.root.withdraw()  # Hide the root window
 
-def btnClick(numbers):
-    start = txtDisplay.get()
-    global f_num
-    f_num = int(start)
-    txtDisplay.delete(0, END)
-    txtDisplay.insert(0, f_num + int(numbers))
+        # Initialize variables
+        self.decks = 0
+        self.facecards = 0
+        self.total_cards = 0
+        self.cards_counted = 0
+        self.running_count = 0
+        self.true_count = 0
+        self.chance_percent = 0
 
-def butClick(number):
-    global operator
-    operator = operator
-    text_Input.set(operator)
-    deckcounter.set(operator)
+        # StringVars for Tkinter widgets
+        self.decks_var = tk.StringVar()
+        self.text_input = tk.StringVar()
+        self.deck_counter = tk.StringVar()
+        self.true_count_var = tk.StringVar()
+        self.chance_var = tk.StringVar()
+        self.decks_remaining_var = tk.StringVar()
 
-def btnClearDisplay():
-    txtDisplay.delete(0, END)
-    countDisplay.delete(0, END)
+        # Setup the deck selection window
+        self.setup_deck_window()
 
-def btncount(numbers):
-    countstart = countDisplay.get()
-    global ctstart
-    ctstart = int(countstart)
-    countDisplay.delete(0, END)
-    countDisplay.insert(0, ctstart + int(numbers))
+    def setup_deck_window(self):
+        """
+        Create and display the deck selection window.
+        """
+        self.deck_window = tk.Toplevel(self.root)
+        self.deck_window.title('Deck Selection')
+        self.deck_window.geometry('500x200')  # Adjusted to match original sizing
+        self.deck_window.resizable(False, False)
 
+        # Label for instruction
+        instruction_label = tk.Label(
+            self.deck_window,
+            text='Select Number of Starting Decks:',
+            font=('Arial', 15, 'bold')
+        )
+        instruction_label.pack(pady=20)
 
-def tbtncount(numberss):
-    tcountstart = trueCountDisplay.get()
-    global tcount
-    tcount = (round(f_num/(int(decks)-1)))
-    trueCountDisplay.delete(0, END)
-    trueCountDisplay.insert(0, tcount)
+        # Entry for number of decks
+        self.deck_entry = tk.Entry(
+            self.deck_window,
+            textvariable=self.decks_var,
+            font=('Arial', 18, 'bold'),
+            width=5,
+            justify=tk.CENTER
+        )
+        self.deck_entry.pack()
 
+        # Save button
+        save_button = tk.Button(
+            self.deck_window,
+            text='Save',
+            font=('Arial', 15, 'bold'),
+            command=self.exit_decks
+        )
+        save_button.pack(pady=20)
 
+    def exit_decks(self):
+        """
+        Validate the number of decks entered and proceed to the main window.
+        """
+        try:
+            decks_input = self.decks_var.get()
+            if not decks_input.isdigit():
+                raise ValueError("Please enter a valid positive integer for decks.")
+            self.decks = int(decks_input)
+            if self.decks <= 0:
+                raise ValueError("Number of decks must be greater than zero.")
 
-F = "F"
-cal = Tk()
-cal.title("card counter")
-operator = ""
-text_Input = StringVar()
-deckcounter = StringVar()
-truecount = StringVar()
-f_num=int(0)
-ctstart=int(0)
-tcount=int(0)
-one = int(1)
-zero = int(0)
-minusone = int(-1)
-operator=0
+            # Initialize facecards and total_cards based on decks
+            self.facecards = self.decks * 16  # 16 face cards per deck (10, J, Q, K in four suits)
+            self.total_cards = self.decks * 52  # 52 cards per deck
 
-if ctstart <= 52:
-    decks = decks
-if ctstart > 52 and ctstart <= 104:
-    decks = decks -1
-if ctstart > 104 and ctstart <=156:
-    decks = decks - 2
-if ctstart > 156 and ctstart <= 208:
-    decks = decks -3
-if ctstart > 208 and ctstart <= 260:
-    decks = decks -4
-if ctstart > 260 and ctstart <= 312:
-    decks = decks -5
-if ctstart > 312 and ctstart <= 364:
-    decks = decks -6
+            # Close the deck selection window and open the main window
+            self.deck_window.destroy()
+            self.setup_main_window()
 
+        except ValueError as ve:
+            messagebox.showerror("Invalid Input", str(ve))
 
-def o_and_t(number):
-    global operator
-    btnClick(number)
-    btncount(one)
-    #tbtnCounter(number)
+    def setup_main_window(self):
+        """
+        Create and display the main application window with all functionalities.
+        """
+        self.main_window = tk.Toplevel(self.root)
+        self.main_window.title('Card Counter')
+        self.main_window.geometry('1350x700')  # Restored to original size
+        self.main_window.resizable(False, False)
+        # Uncomment the following line if you have an icon.ico file
+        # self.main_window.iconbitmap('icon.ico')
+        self.main_window.configure(bg='#00D948')
 
-txtDisplay = Entry(cal, textvariable=text_Input, width=80)
-txtDisplay.grid(row=0, column=0, columnspan=5)
-txtDisplay.insert(0, f_num)
+        # Load and place images with error handling
+        self.load_images()
 
-btnF = Button(cal, padx=16, bd=5, fg="black", font=('ariel', 15, 'bold'),
-              text="F", command=lambda: o_and_t(minusone)).grid(row=2, column=0)
-btn2 = Button(cal, padx=16, bd=5, fg="black", font=('ariel', 15, 'bold'),
-              text="2", command=lambda: o_and_t(one)).grid(row=2, column=1)
-btn3 = Button(cal, padx=16, bd=5, fg="black", font=('ariel', 15, 'bold'),
-              text="3", command=lambda: o_and_t(one)).grid(row=2, column=2)
-btn4 = Button(cal, padx=16, bd=5, fg="black", font=('ariel', 15, 'bold'),
-              text="4", command=lambda: o_and_t(one)).grid(row=3, column=0)
-btn5 = Button(cal, padx=16, bd=5, fg="black", font=('ariel', 15, 'bold'),
-              text="5", command=lambda: o_and_t(one)).grid(row=3, column=1)
-btn6 = Button(cal, padx=16, bd=5, fg="black", font=('ariel', 15, 'bold'),
-              text="6", command=lambda: o_and_t(one)).grid(row=3, column=2)
-btn7 = Button(cal, padx=16, bd=5, fg="black", font=('ariel', 15, 'bold'),
-              text="7", command=lambda: o_and_t(zero)).grid(row=4, column=0)
-btn8 = Button(cal, padx=16, bd=5, fg="black", font=('ariel', 15, 'bold'),
-              text="8", command=lambda: o_and_t(zero)).grid(row=4, column=1)
-btn9 = Button(cal, padx=16, bd=5, fg="black", font=('ariel', 15, 'bold'),
-              text="9", command=lambda: o_and_t(zero)).grid(row=4, column=2)
-btn0 = Button(cal, padx=16, bd=5, fg="black", font=('ariel', 15, 'bold'),
-              text="RESET", command=lambda:butClick(zero)).grid(row=5, column=0)
+        # Initialize GUI components
+        self.create_labels()
+        self.create_entries()
+        self.create_buttons()
 
+    def load_images(self):
+        """
+        Load images for the banner and charts. Handle missing files gracefully.
+        """
+        # Banner Image
+        try:
+            banner_path = 'banner.png'
+            if os.path.exists(banner_path):
+                banner_img = Image.open(banner_path)
+                # Updated resizing dimensions to 750x200
+                banner_img = banner_img.resize((750, 200), Image.Resampling.LANCZOS)
+                self.banner = ImageTk.PhotoImage(banner_img)
+                banner_label = tk.Label(self.main_window, image=self.banner, bg='#00D948')
+                banner_label.place(x=0, y=0)
+            else:
+                print(f"Warning: {banner_path} not found.")
+        except Exception as e:
+            print(f"Error loading banner image: {e}")
 
+        # Hard Chart Image
+        try:
+            chart1_path = 'chart11.png'
+            if os.path.exists(chart1_path):
+                chart1_img = Image.open(chart1_path)
 
-countDisplay = Entry(cal, textvariable=deckcounter, width=50)
-countDisplay.grid(row=7, column=0, columnspan=5)
-countDisplay.insert(0, ctstart)
-trueCountDisplay = Entry(cal, textvariable=truecount, width=50)
-trueCountDisplay.grid(row=9, column=0, columnspan=5)
-trueCountDisplay.insert(0, tcount)
-tbtnCounter = Button(cal, padx=16, bd=5, fg="black", font=('ariel', 15, 'bold'),
-              text="True Count", command=lambda:tbtncount(tcount)).grid(row=10, column=1)
+                self.hardchart = ImageTk.PhotoImage(chart1_img)
+                hardchart_label = tk.Label(self.main_window, image=self.hardchart, bg='#00D948')
+                hardchart_label.place(x=750, y=0)
+            else:
+                print(f"Warning: {chart1_path} not found.")
+        except Exception as e:
+            print(f"Error loading chart11.png: {e}")
 
+        # Soft Chart Image
+        try:
+            chart2_path = 'chart12.png'
+            if os.path.exists(chart2_path):
+                chart2_img = Image.open(chart2_path)
+                self.softchart = ImageTk.PhotoImage(chart2_img)
+                softchart_label = tk.Label(self.main_window, image=self.softchart, bg='#00D948')
+                softchart_label.place(x=1050, y=0)  # Adjusted x to 1050 to prevent overlap
+            else:
+                print(f"Warning: {chart2_path} not found.")
+        except Exception as e:
+            print(f"Error loading chart12.png: {e}")
 
-root = tk.Tk()
-S = tk.Scrollbar(root)
-T = tk.Text(root, height=4, width=50)
-S.pack(side=tk.RIGHT, fill=tk.Y)
-T.pack(side=tk.LEFT, fill=tk.Y)
-S.config(command=T.yview)
-T.config(yscrollcommand=S.set)
-quote = "Instructions:"
+    def create_labels(self):
+        """
+        Create labels for the main window.
+        """
+        # Labels for counts
+        cards_counted_label = tk.Label(
+            self.main_window,
+            text='Cards Counted',
+            font=('Arial', 15, 'bold'),
+            bg='#00D948'
+        )
+        cards_counted_label.place(x=550, y=220)  # Adjusted y to 220
 
-T.insert(tk.END, quote)
+        running_count_label = tk.Label(
+            self.main_window,
+            text='Running Count',
+            font=('Arial', 15, 'bold'),
+            bg='#00D948'
+        )
+        running_count_label.place(x=550, y=300)  # Adjusted y to 300
 
+        true_count_label = tk.Label(
+            self.main_window,
+            text='True Count',
+            font=('Arial', 15, 'bold'),
+            bg='#00D948'
+        )
+        true_count_label.place(x=563, y=380)  # Adjusted y to 380
 
-cal.mainloop()
+        chance_label = tk.Label(
+            self.main_window,
+            text='Chance of a Face Card (10,J,Q,K)',
+            font=('Arial', 15, 'bold'),
+            bg='#00D948'
+        )
+        chance_label.place(x=100, y=500)  # Remains the same
 
+        # Label for Decks Remaining
+        decks_remaining_label = tk.Label(
+            self.main_window,
+            text='Decks Remaining',
+            font=('Arial', 15, 'bold'),
+            bg='#00D948'
+        )
+        decks_remaining_label.place(x=550, y=460)  # Adjusted y to 440
+
+    def create_entries(self):
+        """
+        Create entry widgets for displaying counts and probabilities.
+        """
+        # Entry for Cards Counted
+        self.cards_counted_entry = tk.Entry(
+            self.main_window,
+            textvariable=self.deck_counter,
+            justify=tk.CENTER,
+            font=('Arial', 20, 'bold'),
+            width=5,
+            bd=5
+        )
+        self.cards_counted_entry.place(x=590, y=180)  # Adjusted y to 220
+        self.deck_counter.set(self.cards_counted)
+
+        # Entry for Running Count
+        self.running_count_entry = tk.Entry(
+            self.main_window,
+            textvariable=self.text_input,
+            justify=tk.CENTER,
+            font=('Arial', 20, 'bold'),
+            width=5,
+            bd=5
+        )
+        self.running_count_entry.place(x=590, y=250)  # Adjusted y to 300
+        self.text_input.set(self.running_count)
+
+        # Entry for True Count
+        self.true_count_entry = tk.Entry(
+            self.main_window,
+            textvariable=self.true_count_var,
+            justify=tk.CENTER,
+            font=('Arial', 20, 'bold'),
+            width=5,
+            bd=5
+        )
+        self.true_count_entry.place(x=590, y=340)  # Adjusted y to 380
+        self.true_count_var.set(self.true_count)
+
+        # Entry for Chance of Face Card
+        self.chance_entry = tk.Entry(
+            self.main_window,
+            textvariable=self.chance_var,
+            justify=tk.CENTER,
+            font=('Arial', 20, 'bold'),
+            width=7,
+            bd=5
+        )
+        self.chance_entry.place(x=200, y=550)  # Remains the same
+        self.chance_var.set(f'{self.chance_percent}%')
+
+        # Entry for Decks Remaining
+        self.decks_remaining_entry = tk.Entry(
+            self.main_window,
+            textvariable=self.decks_remaining_var,
+            justify=tk.CENTER,
+            font=('Arial', 20, 'bold'),
+            width=5,
+            bd=5
+        )
+        self.decks_remaining_entry.place(x=590, y=410)  # Adjusted y to 440
+        self.decks_remaining_var.set(self.decks_remaining())
+
+    def create_buttons(self):
+        """
+        Create card buttons and functional buttons in the main window.
+        """
+        # Card Buttons Configuration
+        cards = [
+            {'text': 'A', 'count': -1, 'x': 20, 'y': 420},
+            {'text': 'K', 'count': -1, 'x': 130, 'y': 330},
+            {'text': 'Q', 'count': -1, 'x': 240, 'y': 330},
+            {'text': 'J', 'count': -1, 'x': 350, 'y': 330},
+            {'text': '10', 'count': -1, 'x': 20, 'y': 330},
+            {'text': '2', 'count': 1, 'x': 20, 'y': 150},
+            {'text': '3', 'count': 1, 'x': 130, 'y': 150},
+            {'text': '4', 'count': 1, 'x': 240, 'y': 150},
+            {'text': '5', 'count': 1, 'x': 350, 'y': 150},
+            {'text': '6', 'count': 1, 'x': 20, 'y': 240},
+            {'text': '7', 'count': 0, 'x': 130, 'y': 240},
+            {'text': '8', 'count': 0, 'x': 240, 'y': 240},
+            {'text': '9', 'count': 0, 'x': 350, 'y': 240},
+        ]
+
+        for card in cards:
+            action = self.get_card_action(card['count'], card['text'])
+            btn = tk.Button(
+                self.main_window,
+                padx=20,
+                bd=5,
+                fg='black',
+                font=('Arial', 20, 'bold'),
+                text=card['text'],
+                command=action
+            )
+            btn.place(x=card['x'], y=card['y'])
+
+        # RESET Button
+        reset_button = tk.Button(
+            self.main_window,
+            padx=15,
+            bd=5,
+            fg='black',
+            font=('Arial', 15, 'bold'),
+            text='RESET',
+            command=self.reset_counts
+        )
+        reset_button.place(x=130, y=425)
+
+        # TRUE COUNT Button
+        true_count_button = tk.Button(
+            self.main_window,
+            padx=15,
+            bd=5,
+            fg='black',
+            font=('Arial', 15, 'bold'),
+            text='Calculate True Count',
+            command=self.calculate_true_count
+        )
+        true_count_button.place(x=280, y=425)
+
+        # CHANCE Button
+        chance_button = tk.Button(
+            self.main_window,
+            padx=15,
+            bd=5,
+            fg='black',
+            font=('Arial', 15, 'bold'),
+            text='Calculate Face Chance',
+            command=self.calculate_face_chance
+        )
+        chance_button.place(x=100, y=500)
+
+    def get_card_action(self, count_value, card_text):
+        """
+        Return the appropriate action for a card button based on its count value.
+
+        :param count_value: The count value associated with the card.
+        :param card_text: The text label of the card.
+        :return: A lambda function to be used as the button's command.
+        """
+        if count_value == -1 and card_text in ['10', 'J', 'Q', 'K']:
+            return lambda: [self.update_counts(count_value), self.decrement_facecards()]
+        elif count_value == -1 and card_text == 'A':
+            return lambda: [self.update_counts(count_value)]
+        else:
+            return lambda: self.update_counts(count_value)
+
+    def update_counts(self, value):
+        """
+        Update the counts based on the card drawn.
+
+        :param value: The count value to add to the running count.
+        """
+        self.cards_counted += 1
+        self.running_count += value
+
+        # Update the StringVars
+        self.deck_counter.set(self.cards_counted)
+        self.text_input.set(self.running_count)
+
+        # Update Decks Remaining
+        self.decks_remaining_var.set(self.decks_remaining())
+
+    def decks_remaining(self):
+        """
+        Calculate and return the number of decks remaining.
+
+        :return: Decks remaining as a float rounded to two decimal places.
+        """
+        decks_remaining = (self.total_cards - self.cards_counted) / 52
+        decks_remaining = round(decks_remaining, 2)
+        return decks_remaining
+
+    def decrement_facecards(self):
+        """
+        Decrement the count of remaining face cards.
+        """
+        if self.facecards > 0:
+            self.facecards -= 1
+
+    def calculate_true_count(self):
+        """
+        Calculate the true count based on the running count and decks remaining.
+        """
+        try:
+            decks_remaining = self.decks_remaining()
+            print(f"Decks Remaining: {decks_remaining}")  # Debug Statement
+            if decks_remaining <= 0:
+                raise ValueError("All decks have been counted.")
+            self.true_count = round(self.running_count / decks_remaining, 2)
+            self.true_count_var.set(self.true_count)
+            print(f"Running Count: {self.running_count}, True Count: {self.true_count}")  # Debug
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+
+    def calculate_face_chance(self):
+        """
+        Calculate the probability of drawing a face card.
+        """
+        try:
+            cards_left = self.total_cards - self.cards_counted
+            if cards_left <= 0:
+                raise ValueError("No cards left in the deck.")
+            self.chance_percent = round((self.facecards / cards_left) * 100, 2)
+            self.chance_var.set(f'{self.chance_percent}%')
+            print(f"Cards Left: {cards_left}, Face Cards Left: {self.facecards}, Chance: {self.chance_percent}%")  # Debug
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+
+    def reset_counts(self):
+        """
+        Reset all counts to their initial states.
+        """
+        confirm = messagebox.askyesno("Confirm Reset", "Are you sure you want to reset all counts?")
+        if confirm:
+            self.cards_counted = 0
+            self.running_count = 0
+            self.true_count = 0
+            self.chance_percent = 0
+            self.facecards = self.decks * 16  # Reset facecards based on decks
+
+            # Update the StringVars
+            self.deck_counter.set(self.cards_counted)
+            self.text_input.set(self.running_count)
+            self.true_count_var.set(self.true_count)
+            self.chance_var.set(f'{self.chance_percent}%')
+            self.decks_remaining_var.set(self.decks_remaining())
+
+    def run(self):
+        """
+        Start the Tkinter main loop.
+        """
+        self.root.mainloop()
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = CardCounter(root)
+    app.run()
